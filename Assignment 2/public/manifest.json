@@ -1,0 +1,8 @@
+{
+  "short_name": "asgmt-2",
+  "name": "React Complete Guide - Assignment 2",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
