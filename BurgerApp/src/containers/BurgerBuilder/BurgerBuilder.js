@@ -18,9 +18,21 @@ class BurgerBuilder extends Component {
             cheese: 0,
             meat: 0
         },
-        totalPrice: 4
+        totalPrice: 4,
+        purchaseable: false
     }
-    
+
+    isPurchaseable = (ingredients) => {
+        const sum = Object.values(ingredients)
+            .reduce((sum, element) => {
+                return sum + element
+            });
+
+        this.setState({
+            purchaseable: sum > 0
+        })
+    }
+
     addIngredientHandler = (type) => {
         const updatedIngredients = {
             ...this.state.ingredients
@@ -28,11 +40,13 @@ class BurgerBuilder extends Component {
         updatedIngredients[type]++;
 
         const updatedPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
-        
+
         this.setState({
             totalPrice: updatedPrice,
-            ingredients: updatedIngredients
+            ingredients: updatedIngredients,
         });
+
+        this.isPurchaseable(updatedIngredients);
     }
 
     removeIngredientHandler = (type) => {
@@ -40,17 +54,21 @@ class BurgerBuilder extends Component {
             ...this.state.ingredients
         };
 
-        if(updatedIngredients[type]  <= 0)
+        if (updatedIngredients[type] <= 0) {
             return;
+        }
+
 
         updatedIngredients[type]--;
 
         const updatedPrice = this.state.totalPrice - INGREDIENT_PRICES[type];
-        
+
         this.setState({
             totalPrice: updatedPrice,
             ingredients: updatedIngredients
         });
+
+        this.isPurchaseable(updatedIngredients);
     }
 
     render() {
@@ -64,12 +82,13 @@ class BurgerBuilder extends Component {
 
         return (
             <Fragment>
-                <Burger ingredients={this.state.ingredients}/>
-                <BuildControls 
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls
                     ingredientAdded={this.addIngredientHandler}
-                    ingredientRemoved={this.removeIngredientHandler} 
+                    ingredientRemoved={this.removeIngredientHandler}
                     disabled={disabledInfo}
-                    price={this.state.totalPrice} />
+                    price={this.state.totalPrice}
+                    purchaseable={this.state.purchaseable} />
             </Fragment>
         );
     }
