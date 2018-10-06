@@ -1,5 +1,7 @@
 import React, { Fragment } from 'react';
 
+import Button from '../../UI/Button/Button';
+
 const orderSummary = (props) => {
     const ingredientSummary = Object.keys(props.ingredients)
         .map(ingredient => {
@@ -18,6 +20,8 @@ return (
             {ingredientSummary}
         </ul>
         <p>Proceede to Checkout?</p>
+        <Button type='Danger' clicked={props.onCancel}>CANCEL</Button>
+        <Button type='Success'clicked={props.onContinue}>CONTINUE</Button>
     </Fragment>
 );
 };
