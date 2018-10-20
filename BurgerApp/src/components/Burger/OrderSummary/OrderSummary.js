@@ -19,6 +19,7 @@ return (
         <ul>
             {ingredientSummary}
         </ul>
+        <p><strong>Total Price: {props.totalPrice.toFixed(2)}</strong></p>
         <p>Proceede to Checkout?</p>
         <Button type='Danger' clicked={props.onCancel}>CANCEL</Button>
         <Button type='Success'clicked={props.onContinue}>CONTINUE</Button>
