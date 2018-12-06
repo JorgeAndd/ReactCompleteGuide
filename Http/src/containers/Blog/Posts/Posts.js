@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-
-import axios from '../../../axios';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 import Post from '../../../components/Post/Post';
 import './Posts.css';
@@ -27,7 +26,7 @@ class Posts extends Component {
                 });
             })
             .catch(error => {
-                this.setState({error: true});
+                this.setState({ error: true });
             })
     }
 
@@ -41,12 +40,14 @@ class Posts extends Component {
         if (!this.state.error) {
             posts = this.state.posts.map(post => {
                 return (
-                    <Post
-                        key={post.id}
-                        title={post.title}
-                        author={post.author}
-                        clicked={() => this.postSelectedHandler(post.id)}
-                    />
+                    <Link to={'/' + post.id} key={post.id}> 
+                        <Post
+                            
+                            title={post.title}
+                            author={post.author}
+                            clicked={() => this.postSelectedHandler(post.id)}
+                        />
+                    </Link>
                 );
             });
         }
