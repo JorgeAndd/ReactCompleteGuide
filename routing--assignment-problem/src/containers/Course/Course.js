@@ -5,13 +5,23 @@ class Course extends Component {
         id: undefined,
         title: undefined
     }
-    
+
     componentDidMount() {
+        this.parseQueryParams();
+    }
+    
+    componentDidUpdate() {
+        this.parseQueryParams();
+    }
+
+    parseQueryParams() {
         const id = this.props.match.params.id;
         const params = new URLSearchParams(this.props.location.search);
         const title = params.get('title');
 
-        this.setState({id: id, title: title});
+        if(this.state.id !== id) {
+            this.setState({id: id, title: title});
+        }
     }
     
     render () {

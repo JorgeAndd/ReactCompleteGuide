@@ -15,7 +15,10 @@ class Courses extends Component {
     }
 
     courseSelectedHandler = course => {
-        this.props.history.push(`/courses/${course.id}?title=${course.title}`);
+        this.props.history.push({
+            pathname: `/courses/${course.id}`,
+            search: `?title=${course.title}`
+        });
     }
 
     render () {
