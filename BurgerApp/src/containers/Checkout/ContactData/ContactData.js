@@ -2,20 +2,45 @@ import React, { Component } from 'react';
 
 import Button from '../../../components/UI/Button/Button';
 import Spinner from '../../../components/UI/Spinner/Spinner';
+import Input from '../../../components/UI/Input/Input';
 import axios from '../../../axios-orders';
 
 import classes from './ContactData.css';
 
 class ContactData extends Component {
     state = {
-        name: '',
-        email: '',
-        address: {
-            street: '',
-            postalCode: ''
+        orderForm: {
+                name: this.generateInputConfig('input', 'text', 'Your name', ''),
+                street: this.generateInputConfig('input', 'text', 'Street', ''),
+                zipCode: this.generateInputConfig('input', 'text', 'ZIP Code', ''),
+                country: this.generateInputConfig('input', 'text', 'Country', ''),
+                email: this.generateInputConfig('input', 'email', 'Your mail', ''),
+                deliveryMethod: {
+                    elementType: 'select',
+                    elementConfig: {
+                        options: [
+                            {value: 'fastest', displayValue: 'Fastest'},
+                            {value: 'cheapest', displayValue: 'Cheapest'}
+                        ]
+                    }
+                }
         },
         loading: false
     }
+
+    generateInputConfig(type, configType, placeholder, value = '') {
+        const config = {
+            elementType: type, 
+            elementConfig: {
+                type: configType,
+                placeholder: placeholder
+            },
+            value: value
+        };
+
+        return config;
+    }
+
 
     orderHandler = (event) => {
         event.preventDefault();
@@ -47,16 +72,27 @@ class ContactData extends Component {
     }
 
     render() {
+        const formElementsArray = [];
+        for (let key in this.state.orderForm) {
+            formElementsArray.push({
+                id: key,
+                config: this.state.orderForm[key]
+            });
+        }
+
         let form = undefined;
         if(this.state.loading) {
             form = <Spinner />
         } else {
             form = (
             <form>
-                <input className={classes.Input} type="text" name="name" placeholder="Your Name" />
-                <input className={classes.Input} type="email" name="email" placeholder="Your Email" />
-                <input className={classes.Input} type="text" name="street" placeholder="Street" />
-                <input className={classes.Input} type="text" name="postal" placeholder="Your Postal Code" />
+                {formElementsArray.map(elem => (
+                    <Input 
+                        key={elem.id}
+                        elementType={elem.config.elementType}
+                        elementConfig={elem.config.elementConfig}
+                        value={elem.config.value} />
+                ))}
                 <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
             </form>);
         }
