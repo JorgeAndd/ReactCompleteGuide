@@ -22,10 +22,12 @@ class ContactData extends Component {
                             {value: 'fastest', displayValue: 'Fastest'},
                             {value: 'cheapest', displayValue: 'Cheapest'}
                         ]
-                    }
+                    },
+                    value: 'fastest'
                 }
         },
-        loading: false
+        loading: false,
+        formIsValid: false
     }
 
     generateInputConfig(type, configType, placeholder, value = '', required = false) {
@@ -73,7 +75,7 @@ class ContactData extends Component {
     }
 
     checkValidity(value, rules) {
-        if(! rules.touched)
+        if(rules && !rules.touched)
             return true
 
         let isValid = false;
@@ -94,11 +96,22 @@ class ContactData extends Component {
         }
 
         updatedFormElement.value = event.target.value;
-        updatedFormElement.validation.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
-        updatedFormElement.validation.touched = true;
+        if(updatedFormElement.validation) {
+            updatedFormElement.validation.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+            updatedFormElement.validation.touched = true;
+        }
+                
         updatedOrderForm[inputIdentifier] = updatedFormElement;
 
-        this.setState({orderForm: updatedOrderForm});
+        let formIsValid = true;
+        for(let inputIdentifier in updatedOrderForm) {
+            const validation = updatedOrderForm[inputIdentifier].validation;
+
+            if(validation) {
+                formIsValid = validation.valid && formIsValid;
+            }
+        }
+        this.setState({orderForm: updatedOrderForm, formIsValid: formIsValid});
     }
 
     render() {
@@ -125,7 +138,10 @@ class ContactData extends Component {
                             changed={(event) => this.inputChangedHandler(event, elem.id)}
                             validation={elem.config.validation}/>
                     ))}
-                    <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
+                    <Button 
+                        type="Success" 
+                        disabled={! this.state.formIsValid}
+                        clicked={this.orderHandler}>ORDER</Button>
                 </form>);
         }
 
