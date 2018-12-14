@@ -10,11 +10,11 @@ import classes from './ContactData.css';
 class ContactData extends Component {
     state = {
         orderForm: {
-                name: this.generateInputConfig('input', 'text', 'Your name', ''),
-                street: this.generateInputConfig('input', 'text', 'Street', ''),
-                zipCode: this.generateInputConfig('input', 'text', 'ZIP Code', ''),
-                country: this.generateInputConfig('input', 'text', 'Country', ''),
-                email: this.generateInputConfig('input', 'email', 'Your mail', ''),
+                name: this.generateInputConfig('input', 'text', 'Your name', '', true),
+                street: this.generateInputConfig('input', 'text', 'Street', '', true),
+                zipCode: this.generateInputConfig('input', 'text', 'ZIP Code', '', true),
+                country: this.generateInputConfig('input', 'text', 'Country', '', true),
+                email: this.generateInputConfig('input', 'email', 'Your mail', '', true),
                 deliveryMethod: {
                     elementType: 'select',
                     elementConfig: {
@@ -28,14 +28,19 @@ class ContactData extends Component {
         loading: false
     }
 
-    generateInputConfig(type, configType, placeholder, value = '') {
+    generateInputConfig(type, configType, placeholder, value = '', required = false) {
         const config = {
             elementType: type, 
             elementConfig: {
                 type: configType,
                 placeholder: placeholder
             },
-            value: value
+            value: value,
+            validation: {
+                required: required,
+                valid: false,
+                touched: false
+            }            
         };
 
         return config;
@@ -67,6 +72,19 @@ class ContactData extends Component {
             });
     }
 
+    checkValidity(value, rules) {
+        if(! rules.touched)
+            return true
+
+        let isValid = false;
+
+        if(rules && rules.required) {
+            isValid = value.trim() !== '';
+        }
+
+        return isValid;
+    }
+
     inputChangedHandler = (event, inputIdentifier) => {
         const updatedOrderForm = {
             ...this.state.orderForm
@@ -76,6 +94,8 @@ class ContactData extends Component {
         }
 
         updatedFormElement.value = event.target.value;
+        updatedFormElement.validation.valid = this.checkValidity(updatedFormElement.value, updatedFormElement.validation);
+        updatedFormElement.validation.touched = true;
         updatedOrderForm[inputIdentifier] = updatedFormElement;
 
         this.setState({orderForm: updatedOrderForm});
@@ -102,7 +122,8 @@ class ContactData extends Component {
                             elementType={elem.config.elementType}
                             elementConfig={elem.config.elementConfig}
                             value={elem.config.value} 
-                            changed={(event) => this.inputChangedHandler(event, elem.id)}/>
+                            changed={(event) => this.inputChangedHandler(event, elem.id)}
+                            validation={elem.config.validation}/>
                     ))}
                     <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
                 </form>);
