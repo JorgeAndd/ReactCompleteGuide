@@ -46,19 +46,15 @@ class ContactData extends Component {
         event.preventDefault();
         this.setState({ loading: true });
 
+        const formData = {};
+        for(let formElementIdentifier in this.state.orderForm) {
+            formData[formElementIdentifier] = this.state.orderForm[formElementIdentifier].value;
+        }
+
         const order = {
             ingredients: this.props.ingredients,
-            price: this.props.price, // Should recalculate on server
-            customer: {
-                name: 'Andd',
-                address: {
-                    street: 'Testing',
-                    zipCode: '12345',
-                    country: 'Brazil'
-                },
-                email: 'test@test.com',
-                deliveryMethod: 'fastest'
-            }
+            price: this.props.price,
+            orderData: formData
         }
 
         axios.post('/orders.json', order)
@@ -69,6 +65,20 @@ class ContactData extends Component {
             .catch(error => {
                 this.setState({ loading: false, purchasing: false })
             });
+    }
+
+    inputChangedHandler = (event, inputIdentifier) => {
+        const updatedOrderForm = {
+            ...this.state.orderForm
+        }
+        const updatedFormElement = {
+            ...updatedOrderForm[inputIdentifier]
+        }
+
+        updatedFormElement.value = event.target.value;
+        updatedOrderForm[inputIdentifier] = updatedFormElement;
+
+        this.setState({orderForm: updatedOrderForm});
     }
 
     render() {
@@ -85,16 +95,17 @@ class ContactData extends Component {
             form = <Spinner />
         } else {
             form = (
-            <form>
-                {formElementsArray.map(elem => (
-                    <Input 
-                        key={elem.id}
-                        elementType={elem.config.elementType}
-                        elementConfig={elem.config.elementConfig}
-                        value={elem.config.value} />
-                ))}
-                <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
-            </form>);
+                <form onSubmit={this.orderHandler}>
+                    {formElementsArray.map(elem => (
+                        <Input 
+                            key={elem.id}
+                            elementType={elem.config.elementType}
+                            elementConfig={elem.config.elementConfig}
+                            value={elem.config.value} 
+                            changed={(event) => this.inputChangedHandler(event, elem.id)}/>
+                    ))}
+                    <Button type="Success" clicked={this.orderHandler}>ORDER</Button>
+                </form>);
         }
 
         return (
